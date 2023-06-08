@@ -1,9 +1,14 @@
-import { ConfigService } from '@nestjs/config';
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { Presets } from 'userop';
 
 import { AccountStorageService } from 'src/account/storage.service';
-import { Account } from 'src/account/account.entity';
 import { SimpleAccount } from 'userop/dist/preset/builder';
+import { Account } from 'src/account/account.entity';
+
+type WithPaymasterProp = {
+  withPaymaster: boolean;
+};
 
 @Injectable()
 export class AccountService {
@@ -23,12 +28,23 @@ export class AccountService {
     return account;
   }
 
-  async getSmartAccount(id: string) {
+  async getSmartAccount(id: string, options?: WithPaymasterProp) {
     const account = await this.findOne(id);
+
+    const paymasterRpcUrl = this.configService.get('PAYMASTER_URL');
+    const paymasterMiddleware =
+      options.withPaymaster && paymasterRpcUrl
+        ? Presets.Middleware.verifyingPaymaster(paymasterRpcUrl, {
+            chainId: 5,
+          })
+        : undefined;
 
     return SimpleAccount.init(
       account.signer,
       this.configService.getOrThrow('RPC_URL'),
+      {
+        paymasterMiddleware,
+      },
     );
   }
 }
