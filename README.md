@@ -49,5 +49,5 @@ Once the application is running, you can interact with the API endpoints to perf
 - `POST /account`: Create a new account.
 - `GET /account/:id`: Get account details by ID.
 - `GET /accounts/:id/address`: Get the smart wallet address associated with an account.
-- `POST /transaction/transfer/eth`: Transfer ETH from one account to some Ethereum address.
+- `POST /transaction/transfer`: Transfer ETH from one account to some Ethereum address.
 - `POST /transaction/erc20-transfer`: Transfer ERC20 tokens from one account to some Ethereum address.
